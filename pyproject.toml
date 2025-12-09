@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "XCfunlib"            # 你的库名，和包目录名一致最省心
+version = "0.1.0"
+description = "xc energy lib for CF22D, M06..."
+readme = "README.md"      # 如果没有 README 可以先删掉这一行
+requires-python = ">=3.8"
+authors = [
+  {name="Yuhao Chen", email="chenyuhao@shu.edu.cn"},
+]
+
+# 如果依赖别的库，可以写在 dependencies 里，例如：
+# dependencies = ["numpy", "requests"]

@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+src/XCfunlib.egg-info/PKG-INFO
+src/XCfunlib.egg-info/SOURCES.txt
+src/XCfunlib.egg-info/dependency_links.txt
+src/XCfunlib.egg-info/top_level.txt
+src/xclib/CFXXD.py
+src/xclib/__init__.py
+src/xclib/numint_tools.py
+src/xclib/pyscf_io.py
