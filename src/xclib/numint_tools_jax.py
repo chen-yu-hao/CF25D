@@ -9,6 +9,11 @@ def yf(rho):
     return (3/5)*(6*jnp.pi**2)**(2/3)*rho[0]**(5/3)/rho[-1]/2
 def wf(rho):
     return (yf(rho)-1)/(yf(rho)+1)
+def wf_total(rho):
+    rho_total = rho[:,0].sum(axis=0)
+    t_total = rho[:,-1].sum(axis=0)
+    y_total = 3.0/10.0*(3*jnp.pi**2)**(2.0/3.0)*rho_total**(5.0/3.0)/(t_total)
+    return (y_total-1)/(y_total+1)
 def exf(rho):
     return -(3/2)*(3/4/jnp.pi)**(1/3)*rho[0]**(1/3)
 def E_ijk(rho,ex,vx,ux,wx,i,j,k,weight,aijk=1.0):

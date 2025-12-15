@@ -52,6 +52,8 @@ def int_xc_noHF(mf_hf,ni,rho,weight,ee):
 def int_xc(mf_hf,ni,rho,weight,ee):
     # rho = np.float128(rho)
     weight = mf_hf.grids.weights
+    # rho_0 = rho[:,0,]
+    rho = np.where(np.abs(rho)<1e-16,1e-16,rho)
     xa = xf(rho[0])
     xb = xf(rho[1])
     vx_a = vxf(rho[0],wx=2.50)
@@ -70,12 +72,13 @@ def int_xc(mf_hf,ni,rho,weight,ee):
                 ee.append(E_ijk(rho[0],ex_a,vx_a,ux_a,w_a,i,j,k,weight)+E_ijk(rho[1],ex_b,vx_b,ux_b,w_b,i,j,k,weight))
                 # print(E_ijk(rho[0],ex_a,vx_a,ux_a,w_a,i,j,k,weight)+E_ijk(rho[1],ex_b,vx_b,ux_b,w_b,i,j,k,weight),end="  ")
             # print(i,j,k)
+    w_total = wf_total(rho)
     LSDA = ni.eval_xc(',PW_mod',rho[:,0],spin=1)[0]
     for i in range(9):
-        ee.append((rho[0,0]*LSDA*w_a**i+rho[1,0]*LSDA*w_b**i).dot(weight))
+        ee.append((rho[:,0].sum(axis=0)*(LSDA*w_total**i)).dot(weight))
     PBE = ni.eval_xc(",PBE",rho[:,:4],spin=1)[0]
     for i in range(9):
-        ee.append((rho[0,0]*(PBE-LSDA)*w_a**i+rho[1,0]*(PBE-LSDA)*w_b**i).dot(weight))
+        ee.append((rho[:,0].sum(axis=0)*((PBE-LSDA)*w_total**i)).dot(weight))
     rho_a,rho_b = rho[:,0]
     # rho_a[rho_a < 1e-12] = 0
     # rho_b[rho_b < 1e-12] = 0
@@ -127,13 +130,13 @@ def CF22D_nxc_rks(mf_hf):
     ni = mf_hf._numint
     rho = cache_xc_kernel1(ni,mf_hf.mol,mf_hf.grids,mf_hf.make_rdm1(),max_memory=20000)
     print("successfully calculated Rhos")
-    rho = np.array([rho/2,rho/2])
+    # rho = np.array([rho/2,rho/2])
     weight = mf_hf.grids.weights
     ee = [0.0]
     ee = int_xc(mf_hf,ni,rho,weight,ee)
     ee[0] = mf_hf.e_tot-energy_xc(ee[1:])
     return ee
-def cache_xc_kernel1(ni, mol, grids, dm, spin=0, max_memory=2000):
+def cache_xc_kernel1(ni, mol, grids, dm, spin=1, max_memory=2000):
     '''Compute the 0th order density, Vxc and fxc.  They can be used in TDDFT,
     DFT hessian module etc. Note dm the zeroth order density matrix must be a
     hermitian matrix.
@@ -161,7 +164,7 @@ def cache_xc_kernel1(ni, mol, grids, dm, spin=0, max_memory=2000):
                 in ni.block_loop(mol, grids, nao, ao_deriv, max_memory):
             rhoa.append(make_rho(0, ao, mask, xctype))
             rhob.append(make_rho(1, ao, mask, xctype))
-        rho = (numpy.hstack(rhoa), numpy.hstack(rhob))
+        rho = numpy.array([numpy.hstack(rhoa), numpy.hstack(rhob)])
     # vxc, fxc = ni.eval_xc_eff(xc_code, rho, deriv=2, xctype=xctype, spin=spin)[1:3]
     return rho
 def CF22D_nxc(mf_hf):
@@ -172,7 +175,6 @@ def CF22D_nxc(mf_hf):
     ee = [0.0]
     ee = int_xc(mf_hf,ni,rho,weight,ee)
     ee[0] = mf_hf.e_tot-energy_xc(ee[1:])
-    
     return ee
 
 

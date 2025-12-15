@@ -20,12 +20,13 @@ def int_xc_jax(params,rho,weight,ee):
         for j in range(4-i):
             for k in range(6-i-j):
                 ee.append(E_ijk(rho[0],ex_a,vx_a,ux_a,w_a,i,j,k,weight)+E_ijk(rho[1],ex_b,vx_b,ux_b,w_b,i,j,k,weight))
+    w_total = wf_total(rho)
     LSDA = PW_mod_c(rho,params)
     for i in range(9):
-        ee.append((rho[0,0]*LSDA*w_a**i+rho[1,0]*LSDA*w_b**i).dot(weight))
+        ee.append((LSDA*w_total**i).dot(weight))
     PBE_LSDA = PBE_pw_c(rho,LSDA,params)
     for i in range(9):
-        ee.append((rho[0,0]*PBE_LSDA*w_a**i+rho[1,0]*PBE_LSDA*w_b**i).dot(weight))
+        ee.append((PBE_LSDA*w_total**i).dot(weight))
     rho_a,rho_b = rho[:,0]
     UEGab = LSDA
     UEGa = PW_alpha_c(rho_a,params)
