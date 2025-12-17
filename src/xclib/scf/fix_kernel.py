@@ -4,7 +4,7 @@ from pyscf import gto, scf, lib, dft
 import numpy as np
 from xclib.numint_tools import *
 from xclib.CFXXD import *
-from xclib.pyscf_io import *
+from xclib.tools.pyscf_io import *
 from pyscf import gto, scf, lib
 from mokit.lib.fch2py import fch2py
 from mokit.lib.ortho import check_orthonormal
@@ -14,8 +14,7 @@ def KS_fromfch(name,n=24,grids_level=6,memory=20000,verbose=0):
         f.write("caling")
     # p = {}
     with open(f"{name}.py","r") as f:
-        strs = f.read().replace("scf.UHF","dft.UKS").replace("scf.RHF","dft.RKS").replace("mf.max_memory = 4000",f"mf.max_memory = {memory}").replace("mf.max_cycle = 1",f"mf.max_cycle = 1\nmf.grids.level = {grids_level}")
-    # exec(strs.split("\n\n")[0],globals())
+        strs = f.read().replace("scf.UHF","dft.UKS").replace("scf.RHF","dft.RKS").replace("mf.max_memory = 4000",f"mf.max_memory = {memory}").replace("mf.max_cycle = 1",f"mf.max_cycle = 1\nmf.grids.level = {grids_level}\nmf.xc='CF22D,CF22D'").replace("lib.num_threads(2)",f"lib.num_threads({n})")
     exec(strs.split("\n\n")[1],globals())
     lib.num_threads(n)
     exec(strs.split("\n\n")[2],globals())
@@ -51,7 +50,8 @@ def KS(name,n=24,grids_level=6,memory=20000,verbose=0):
         f.write("caling")
     # p = {}
     with open(f"{name}.py","r") as f:
-        strs = f.read().replace("scf.UHF","dft.UKS").replace("scf.RHF","dft.RKS").replace("mf.max_memory = 4000",f"mf.max_memory = {memory}").replace("mf.max_cycle = 1",f"mf.max_cycle = 1000\nmf.grids.level = {grids_level}\nmf.xc='CF22D,CF22D'")
+        strs = f.read().replace("scf.UHF","dft.UKS").replace("scf.RHF","dft.RKS").replace("mf.max_memory = 4000",f"mf.max_memory = {memory}").replace("mf.max_cycle = 1",f"mf.max_cycle = 1000\nmf.grids.level = {grids_level}\nmf.xc='CF22D,CF22D'").replace("lib.num_threads(2)",f"lib.num_threads({n})")
+        # strs = f.read().replace("scf.UHF","dft.UKS").replace("scf.RHF","dft.RKS").replace("mf.max_memory = 4000",f"mf.max_memory = {memory}").replace("mf.max_cycle = 1",f"mf.max_cycle = 1000\nmf.grids.level = {grids_level}\nmf.xc='CF22D,CF22D'")
     # exec(strs.split("\n\n")[0],globals())
     exec(strs.split("\n\n")[1],globals())
     lib.num_threads(n)

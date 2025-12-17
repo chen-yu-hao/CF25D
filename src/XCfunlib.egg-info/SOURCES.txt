@@ -4,7 +4,12 @@ src/XCfunlib.egg-info/PKG-INFO
 src/XCfunlib.egg-info/SOURCES.txt
 src/XCfunlib.egg-info/dependency_links.txt
 src/XCfunlib.egg-info/top_level.txt
+src/xclib/CF25D_jax.py
 src/xclib/CFXXD.py
 src/xclib/__init__.py
 src/xclib/numint_tools.py
-src/xclib/pyscf_io.py
+src/xclib/numint_tools_jax.py
+src/xclib/scf/fix_kernel.py
+src/xclib/tools/__init__.py
+src/xclib/tools/loader.py
+src/xclib/tools/pyscf_io.py
