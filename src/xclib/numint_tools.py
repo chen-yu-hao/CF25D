@@ -63,7 +63,7 @@ def h_function(chi_ab2,zet_ab,alpha=0.00304966):
     t3_zet2 = zet_ab**2 / (gamma_val**3)               # ζ²/γ³
 
     return np.array([t1, t2_chi, t2_zet, 1.918681e-03*t3_chi4-2.032902e-03*t3_zet2])
-params = {"PW/params_a_pp":[1,  1,  1],    
+params = {   "PW/params_a_pp":[1,  1,  1],    
              "PW/params_a_a"      : [0.0310907, 0.01554535, 0.0168869],
              "PW/params_a_alpha1": [0.21370,  0.20548,  0.11125],
              "PW/params_a_beta1"  : [7.5957, 14.1189, 10.357],

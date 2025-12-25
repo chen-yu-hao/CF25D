@@ -3,17 +3,21 @@ from .numint_tools_jax import *
 import jax
 import jax.numpy as jnp
 @jax.jit
-def int_xc_jax(params,rho,weight,ee): 
-    # rho = np.float128(rho)
+def int_xc_jax(params,rho,weight): 
+    wx = params['wx']
+    gamma = params['gamma']
+    alpha = params['alpha']
+    alpha_anti = params['alpha_anti']
+    ee = []
     xa = xf(rho[0])
     xb = xf(rho[1])
     xab = jnp.sqrt((xa**2+xb**2))
-    vx_a = vxf(rho[0],wx=2.50)
-    ux_a = uxf(xa,gamma=0.004)
+    vx_a = vxf(rho[0],wx=wx)
+    ux_a = uxf(xa,gamma=gamma)
     w_a = wf(rho[0])
     ex_a = exf(rho[0])
-    vx_b = vxf(rho[1],wx=2.50)
-    ux_b = uxf(xb,gamma=0.004)
+    vx_b = vxf(rho[1],wx=wx)
+    ux_b = uxf(xb,gamma=gamma)
     w_b = wf(rho[1])
     ex_b = exf(rho[1])
     for i in range(4):
@@ -23,20 +27,20 @@ def int_xc_jax(params,rho,weight,ee):
     w_total = wf_total(rho)
     LSDA = PW_mod_c(rho,params)
     for i in range(9):
-        ee.append((LSDA*w_total**i).dot(weight))
+        ee.append((rho[:,0].sum(axis=0)*(LSDA*w_total**i)).dot(weight))
     PBE_LSDA = PBE_pw_c(rho,LSDA,params)
     for i in range(9):
-        ee.append((PBE_LSDA*w_total**i).dot(weight))
+        ee.append((rho[:,0].sum(axis=0)*((PBE_LSDA)*w_total**i)).dot(weight))
     rho_a,rho_b = rho[:,0]
     UEGab = LSDA
-    UEGa = PW_alpha_c(rho_a,params)
-    UEGb = PW_alpha_c(rho_b,params)
+    UEGa = PW_alpha_c(rho_a,params,dens_threshold=1e-15)
+    UEGb = PW_alpha_c(rho_b,params,dens_threshold=1e-15)
     zeta = zetf(rho[0])
     zetb = zetf(rho[1])
     zetab = zeta+zetb
-    h_anti = h_function(xa**2+xb**2,zetab)
-    ha = h_function(xa**2,zeta,alpha=0.00515088)
-    hb = h_function(xb**2,zetb,alpha=0.00515088)
+    h_anti = h_function(xa**2+xb**2,zetab,alpha=alpha_anti)
+    ha = h_function(xa**2,zeta,alpha=alpha)
+    hb = h_function(xb**2,zetb,alpha=alpha)
     Da = Dsigma(rho[0])
     Db = Dsigma(rho[1])
     for value in h_anti:
@@ -50,7 +54,7 @@ def int_xc_jax(params,rho,weight,ee):
     ub = uxf(xb,0.06)
     for i in range(5):
         ee.append((UEGa*rho_a*ua**i*Da+UEGb*rho_b*ub**i*Db).dot(weight))
-    return ee
+    return jnp.array(ee)
 def cache_xc_kernel1(mf_hf, spin=1, max_memory=2000):
     '''Compute the 0th order density, Vxc and fxc.  They can be used in TDDFT,
     DFT hessian module etc. Note dm the zeroth order density matrix must be a

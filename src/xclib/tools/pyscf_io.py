@@ -24,7 +24,7 @@ def save_mf_uks(mf_uks, chk_path):
     mf_uks.dump_chk(chk_path)
 
 
-def load_mf_uks(chk_path):
+def load_mf_uks(chk_path, level = 6):
     """Load a ``pyscf.dft.UKS`` object from ``chk_path``.
 
     Parameters
@@ -47,11 +47,11 @@ def load_mf_uks(chk_path):
     mf_uks = dft.UKS(mol)
     mf_uks.__dict__.update(scf_group)
     mf_uks.chkfile = chk_path
-    mf_uks.grids.level = 6
+    mf_uks.grids.level = level
     mf_uks.grids.build()
     return mf_uks
 
-def load_mf_rks(chk_path):
+def load_mf_rks(chk_path, level = 6):
     """Load a ``pyscf.dft.UKS`` object from ``chk_path``.
 
     Parameters
@@ -74,7 +74,7 @@ def load_mf_rks(chk_path):
     mf_uks = dft.RKS(mol)
     mf_uks.__dict__.update(scf_group)
     mf_uks.chkfile = chk_path
-    mf_uks.grids.level = 6
+    mf_uks.grids.level = level
     mf_uks.grids.build()
     return mf_uks
 
